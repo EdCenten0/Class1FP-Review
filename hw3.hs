@@ -65,3 +65,12 @@ consecutiveSums n (x:xs)
 -- main = print (consecutiveSums 10 [1, 2, 3, 4, 5]) -- False
 -- main = print (consecutiveSums 7 [3, 4, 1, 6, 8]) -- True (3 + 4 = 7)
 -- main = print (consecutiveSums 15 [1, 1, 1, 1]) -- False 
+
+
+f :: [Int] -> [Int]
+f [] = []
+f [x] = [x]
+f [x,y] = [x,y]
+f [x:y:zs] = [x:y:zs]
+
+main = print (f [1, 2, 3, 4, 5]) 
