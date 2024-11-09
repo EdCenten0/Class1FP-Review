@@ -187,7 +187,9 @@ averageList x= fromIntegral (sum x) / fromIntegral (length x)
 -- the first and last elements of the input list. Assume the list has at least one element.
 
 firstLast :: [a] -> [a]
--- firstLast x = 
+firtsLast [] = []
+firstLast [x] = [x]
+firstLast (x:xs) = [x] ++ [last xs]
 
 -- main = print (firstLast "hello") -- "ho"
 -- main = print (firstLast [1,2,3,4]) -- [1,4]
@@ -198,7 +200,9 @@ firstLast :: [a] -> [a]
 ---- The concatTailAndRest function takes a list and returns a new list by concatenating 
 -- the tail of the list with the list excluding the last element. Assume the list is not empty.
 
--- concatTailAndRest :: [a] -> [a]
+concatTailAndRest :: [a] -> [a]
+concatTailAndRest [] = []
+concatTailAndRest (x:xs) = xs ++  [x] ++ init xs
 
 
 -- main = print (concatTailAndRest [])
@@ -210,7 +214,13 @@ firstLast :: [a] -> [a]
 ---- The sim function takes a list of integers and returns True if the list is symmetrical, otherwise False.
 -- If the list is empty, it should return True.
 
--- sim :: [Int] -> Bool
+sim :: [Int] -> Bool
+sim [] = True
+sim [x] = True
+sim (x:y:xs) 
+    | x == last xs = True
+    | x == last xs && y == head xs = True
+    | otherwise = False
 
 
 -- main = print (sim [1, 2, 1]) -- True
@@ -223,7 +233,9 @@ firstLast :: [a] -> [a]
 ---- The middle function takes a non-empty list of integers and returns the middle element.
 -- If the list is empty, it should return an error message.
 
--- middle :: [Int] -> Int
+middle :: [Int] -> Int
+middle [] = error "The list is empty"
+middle list = list !! (length list `div` 2)
 
 
 -- main = print (middle [1..5]) -- 3
@@ -235,8 +247,11 @@ firstLast :: [a] -> [a]
 -- splitting the original list at the middle.
 -- If the list is empty, it should return two empty lists.
 
--- cut :: [Int] -> [[Int]]
-
+cut :: [Int] -> [[Int]]
+cut [] = [[],[]]
+cut list = [part1, part2]
+    where
+        (part1, part2) = splitAt (length list `div` 2) list
 
 -- main = print (cut [1..10]) -- [[1,2,3,4,5],[6,7,8,9,10]]
 -- main = print (cut [1..11]) -- [[1,2,3,4,5],[6,7,8,9,10,11]]
@@ -247,7 +262,11 @@ firstLast :: [a] -> [a]
 ---- The f1 function takes a list of integers and returns a new list 
 -- with 3 added to every element using recursion.
 
--- f1 :: [Int] -> [Int]
+f1 :: [Int] -> [Int]
+f1 [] = []
+f1 (x:xs) 
+    | length (x:xs) == 0 = (x:xs)
+    | otherwise = [x+3] ++ f1 xs
 
 
 -- main = print (f1 [1, 5, 3, 1, 6]) -- [4, 8, 6, 4, 9]
@@ -259,7 +278,12 @@ firstLast :: [a] -> [a]
 ---- The f2 function will take a list of integers 
 -- and returns a new list with the double of the positive elements.
 
--- f2 :: [Int] -> [Int]
+f2 :: [Int] -> [Int]
+f2 [] = []
+f2 (x:xs) 
+    | length (x:xs) == 0 = (x:xs)
+    | x <= 0 = f2 xs 
+    | otherwise =  [x*2] ++ f2 xs
 
 
 -- main = print (f2 [1, 2, -2, 3, -4]) -- [2, 4, 6]
@@ -269,7 +293,11 @@ firstLast :: [a] -> [a]
 ---------------------------------------------------------------------------------------
 ---- The sq function will take a list of integers and returns a new list with the square of each element.
 
--- sq :: [Int] -> [Int]
+sq :: [Int] -> [Int]
+sq [] = []
+sq (x:xs) 
+    | length (x:xs) == 0 = (x:xs)
+    | otherwise = [x*x] ++ sq xs
 
 
 -- main = print (sq [1..5]) -- [1, 4, 9, 16, 25]
@@ -281,8 +309,10 @@ firstLast :: [a] -> [a]
 ---- The f4 function will take a list of lists of integers and returns a new 
 -- list of lists with the square of every element.
 
--- f4 :: [[Int]] -> [[Int]]
-
+f4 :: [[Int]] -> [[Int]]
+f4 [] = []
+f4 (x:xs) = sq x : f4 xs
+ 
 
 -- main = print (f4 [[1,2],[3,4,5,6],[7,8]]) -- [[1,4],[9,16,25,36],[49,64]]
 -- main = print (f4 [[], [1], [2, 3]]) -- [[], [1], [4, 9]]
@@ -294,7 +324,12 @@ firstLast :: [a] -> [a]
 -- with all elements equal to 5 removed.
 -- This function should not use higher-order functions.
 
--- not_five :: [Int] -> [Int]
+not_five :: [Int] -> [Int]
+not_five [] = []
+not_five (x:xs) 
+    | length (x:xs) == 0 = []
+    | x /= 5 = [x] ++ not_five xs
+    | otherwise = not_five xs
 
 
 -- main = print (not_five [5, 4, 5, 4, 3]) -- [4, 4, 3]
@@ -304,7 +339,9 @@ firstLast :: [a] -> [a]
 -- main = print (not_five [5]) -- []
 
 
--- not_five2 :: [Int] -> [Int]
+not_five2 :: [Int] -> [Int]
+not_five2 [] = []
+not_five2 list = filter (\x -> x /= 5) list
 
 
 -- main = print (not_five2 [5, 4, 5, 4, 3]) -- [4, 4, 3]
@@ -314,7 +351,12 @@ firstLast :: [a] -> [a]
 ---- The del function will take an integer n and a list of integers, 
 -- and returns a new list with all occurrences of n removed.
 
--- del :: Int -> [Int] -> [Int]
+del :: Int -> [Int] -> [Int]
+del _ [] = []
+del n (x:xs) 
+    | length (x:xs) == 0 = []
+    | x /= n = [x] ++ del n xs
+    | otherwise = del n (xs)
 
 
 -- main = print (del 5 [1, 5, 6, 7, 5, 8, 5]) -- [1, 6, 7, 8]
@@ -329,7 +371,11 @@ firstLast :: [a] -> [a]
 -- E.g. for [[1, 2], [3, 4], [5]] the result is [[0,1,2],[0,3,4],[0,5]]
 
 
--- insertZero :: [[Int]] -> [[Int]]
+insertZero :: [[Int]] -> [[Int]]
+insertZero [] = []
+insertZero (x:xs)
+    | length (x:xs) == 0 = []
+    | otherwise = [[0] ++ x] ++ insertZero xs
 
 
 -- main = print (insertZero [[1, 2], [3, 4], [5]]) -- [[0,1,2],[0,3,4],[0,5]]
@@ -345,7 +391,9 @@ firstLast :: [a] -> [a]
 -- the built in function is product
 -- main = print (product [1..7]) -- 5040
 
--- productf :: [Int] -> Int
+productf :: [Int] -> Int
+productf [] = 1
+productf list = product list
 
 
 -- main = print ( a  [1..5]) -- 120
@@ -357,8 +405,14 @@ firstLast :: [a] -> [a]
 ---------------------------------------------------------------------------------------
 ---- Write a function filterEven that takes a list of integers and returns a new list containing only the even numbers.
 
--- filterEven :: [Int] -> [Int]
+filterEven :: [Int] -> [Int]
+filterEven [] = []
+filterEven (x:xs)
+    | even x = x : filterEven xs
+    | otherwise = filterEven xs
 
+-- filterEven :: [Int] -> [Int]
+-- filterEven list = filter (\x -> even x ) list
 
 -- main = print (filterEven [1, 2, 3, 4, 5, 6]) -- [2, 4, 6]
 -- main = print (filterEven [7, 9, 13]) -- []
@@ -369,7 +423,9 @@ firstLast :: [a] -> [a]
 ---- Write a function wordLengths that takes a list of strings and 
 -- returns a list of integers representing the length of each word.
 
--- wordLengths :: [String] -> [Int]
+wordLengths :: [String] -> [Int]
+wordLengths [] = []
+wordLengths (x:xs) = [length x] ++ wordLengths xs
 
 
 -- main = print (wordLengths ["apple", "banana", "cherry"]) -- [5, 6, 6]
@@ -381,7 +437,9 @@ firstLast :: [a] -> [a]
 -- Write a function that removes the first and last element of a list. 
 -- Assume at least 1 element is given.
 
--- removeEnds :: [a] -> [a]
+removeEnds :: [a] -> [a]
+removeEnds [] = []
+removeEnds list = drop 1 (init list)  
 
 
 -- main = print (removeEnds [1, 2, 3, 4]) -- [2,3]
@@ -395,7 +453,12 @@ firstLast :: [a] -> [a]
 -- remark: built-in function is reverse
 
 -- reverseList :: [a] -> [a]
+-- reverseList [] = []
+-- reverseList list = reverse list
 
+reverseList :: [a] -> [a]
+reverseList [] = []
+reverseList (x:xs) = (reverseList xs) ++ [x]
 
 -- main = print (reverseList [1, 2, 3, 4]) -- [4, 3, 2, 1]
 -- main = print (reverseList ["apple", "banana", "cherry"]) -- ["cherry", "banana", "apple"]
@@ -405,7 +468,11 @@ firstLast :: [a] -> [a]
 -- Write a recursive function that takes a list of integers and 
 -- returns a new list where each odd number is doubled, and each even number is tripled.
 
--- processList :: [Int] -> [Int]
+processList :: [Int] -> [Int]
+processList [] =[]
+processList (x:xs) 
+    | odd x = [x*2] ++ processList xs
+    | otherwise = [x*3] ++ processList xs
 
 
 -- main = print (processList [1, 2, 3, 4, 5]) -- [2, 6, 6, 12, 10]
@@ -418,10 +485,15 @@ firstLast :: [a] -> [a]
 -- Write a recursive function that takes a list of lists of integers and 
 -- returns a new list containing the count of numbers greater than 3 in each inner list.
 
--- countInList :: [Int] -> Int
+countInList :: [Int] -> Int
+countInList list = length (filter (\x -> x > 3) list)
 
 
--- countGT3 :: [[Int]] -> [Int]
+
+countGT3 :: [[Int]] -> [Int]
+countGT3 [] = []
+countGT3 (x:xs) = [countInList x] ++ countGT3 xs
+
 
 
 -- main = print (countGT3 [[1, 2, 3], [4, 5, 6], [2, 3, 4]]) -- [0, 3, 1]
@@ -435,7 +507,11 @@ firstLast :: [a] -> [a]
 -- The function should give an error message if the index is out of bounds.
 -- remark: Lists are 0-indexed.
 
--- elementAt :: Int -> [a] -> a
+elementAt :: Int -> [a] -> a
+elementAt _ [] = error "Error: Index out of bounds"
+elementAt x list 
+    | length list > x && x >= 0 =  list !! x
+    | otherwise = error "Error: Index out of bounds"
 
 
 -- main = print( elementAt 2 [1, 2, 3, 4, 5])  -- 3
@@ -454,7 +530,11 @@ firstLast :: [a] -> [a]
 -- and the end index must not exceed the length of the list. If any of these conditions are violated, 
 -- the function should return an error message indicating 'Invalid indices'.
 
--- sliceList :: Int -> Int -> [a] -> [a]
+sliceList :: Int -> Int -> [a] -> [a]
+sliceList _ _ [] = []
+sliceList x y list
+    | x >= 0 && y > x && y < length list = [list !! x] ++ take (y-(x+1)) (drop (x+1) list)
+    | otherwise = error "Invalid Indices"
 
 
 -- main = print (sliceList 1 4 [1, 2, 3, 4, 5, 6])  -- [2, 3, 4]
@@ -470,7 +550,13 @@ firstLast :: [a] -> [a]
 -- The firstGreaterThanFive function returns the first element greater than 5 in a list of integers. 
 -- If there is no greater than 5 return -1.
 
--- firstGreaterThanFive :: [Int] -> Int
+firstGreaterThanFive :: [Int] -> Int
+firstGreaterThanFive [] = -1
+firstGreaterThanFive (x:xs)
+    | x <= 5 && x > 0 = firstGreaterThanFive xs
+    | x <= 0 = -1
+    | otherwise = x
+
 
 
 -- main = print (firstGreaterThanFive [1, 2, 6, 4, 8]) -- 6
@@ -484,8 +570,11 @@ firstLast :: [a] -> [a]
 
 -- The replaceFirst function replaces the first occurrence of an element in the list with a new given value.
 
--- replaceFirst :: Int -> Int -> [Int] -> [Int]
-
+replaceFirst :: Int -> Int -> [Int] -> [Int]
+replaceFirst _ _ [] = []
+replaceFirst n m (x:xs) 
+    | x == n = m : xs
+    | otherwise = x : replaceFirst n m xs
 
 -- main = print (replaceFirst 3 99 [1, 2, 3, 4, 3]) -- [1, 2, 99, 4, 3]
 -- main = print (replaceFirst 5 42 [1, 2, 3, 4]) -- [1, 2, 3, 4] (no change)
@@ -501,11 +590,18 @@ firstLast :: [a] -> [a]
 -- 0 is replaced by 'x'. 
 -- For example, the list [0,1,2,3,4,5,6] should be transformed into ['x','o','e','o','e','o','e'].
 
--- replaceInts :: [Int] -> [Char]
+replaceInts :: [Int] -> [Char]
+replaceInts [] = []
+replaceInts (x:xs) 
+    | x == 0 = 'x' : replaceInts xs
+    | even x = 'e' : replaceInts xs
+    | odd x = 'o' : replaceInts xs
+    | otherwise =  replaceInts xs
+ 
 
 
 -- main = print (replaceInts [0,1,2,3,4,5]) --"xoeoeo"
---main = print (replaceInts [1,5,3,2,0,3,87,1,2,0]) -- "oooexoooex"
+-- main = print (replaceInts [1,5,3,2,0,3,87,1,2,0]) -- "oooexoooex"
 
 
 
@@ -514,7 +610,11 @@ firstLast :: [a] -> [a]
 -- The doubleElements function returns a list where even elements are divided by 2 ,and odd element are multiplied by 2.
 
 
--- doubleElements :: [Int] -> [Int]
+doubleElements :: [Int] -> [Int]
+doubleElements [] = []
+doubleElements (x:xs)
+    | even x = x `div` 2 : doubleElements xs
+    | otherwise = x*2 : doubleElements xs
 
 
 -- main = print (doubleElements [1, 2, 3]) -- [2, 1, 6]
