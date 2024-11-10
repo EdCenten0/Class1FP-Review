@@ -1,9 +1,9 @@
-import Distribution.Simple.Program.HcPkg (list)
+
 -- 1! ----------------------------------------------------------------------
 -- Write a recursive function that computes the n-th multiple of an x plus 10 (n*x+10).
 
 f1 :: Int -> Int -> Int 
-f1 x n = n * x + 10 
+f1 x y = y*x+10
 
 -- main = print (f1 5 2) -- 20
 
@@ -15,8 +15,8 @@ f1 x n = n * x + 10
 f2 :: [Int] -> [Int]
 f2 [] = []
 f2 (x:xs) 
-    | odd x = x + 2 : f2 xs
-    | otherwise = x - 2 : f2 xs
+    | odd x = x+2  : f2 xs
+    | otherwise = x-2 : f2 xs
 
 
 -- main = print (f2 [1..5]) -- [3,0,5,2,7]
@@ -29,9 +29,8 @@ f2 (x:xs)
 f3 :: [Int] -> [Int]
 f3 [] = []
 f3 (x:xs) 
-    | x > 0 = [] 
-    | otherwise = x*3 : f3 xs
-
+    | x < 0 = x*3 : f3 xs
+    | otherwise = []
 -- main = print (f3 [-1,-3,-5,-5,2,-4,-5]) -- [-3, -9, -15, -15]
 
 
@@ -40,10 +39,11 @@ f3 (x:xs)
 -- Write a function that keeps the non-zero elements of a list and then multiply by 2 every element.
 
 f4 :: [Int] -> [Int]
-f4 [] = []
-f4 (x:xs) 
-    | x /= 0 = x*2 : f4 xs
-    | x == 0 = f4 xs 
+f4 []= []
+f4 (x:xs)
+    | x == 0 = f4 xs
+    | otherwise = x*2 : f4 xs 
+
 
 
 -- main = print (f4 [1,2,3,0,5,0,6,0,0,0,0]) -- [2,4,6,10,12]
@@ -55,9 +55,10 @@ f4 (x:xs)
 -- so that increasing powers of a number are obtained in a list.
 
 f5 :: Int -> Int -> [Int]
-f5 n x 
-    | n == 0 =  []
-    | otherwise =  f5 x (n-1) ++ [x ^ n] 
+f5 x y 
+    | x >= y = f5 (x-1) y ++ [y^x] 
+    | otherwise = []
+
 -- main = print (f5 5 2)  -- [4,8,16,32]
 
 
@@ -67,8 +68,7 @@ f5 n x
 
 f6 :: Int -> [Int] -> [[Int]]
 f6 n [] = []
-f6 n list = list : f6 (n-1) list
-
+f6 n list = replicate n list
 
 -- main = print (f6 3 [1..5]) -- [[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5]]
 
@@ -77,7 +77,9 @@ f6 n list = list : f6 (n-1) list
 -- 7! ----------------------------------------------------------------------
 -- Insert 0 at the middle of each sublist.
 
---f7 :: [[Int]] -> [[Int]]
+f7 :: [[Int]] -> [[Int]]
+f7 [] = []
+f7 (x:xs) = [take ((length x) `div` 2 ) x ++ [0] ++ drop (((length x) `div` 2) ) x ]   ++ f7 xs
 
 -- main = print (f7 [[1..10], [1..11], [], [1], [1,2]]) 
 -- [[1,2,3,4,5,0,6,7,8,9,10],[1,2,3,4,5,0,6,7,8,9,10,11],[0],[0,1],[1,0,2]]
@@ -88,14 +90,13 @@ f6 n list = list : f6 (n-1) list
 -- Extract the elements smaller then the head element of a list. Assume that the list is not empty.
 
 f8 :: [Int] -> [Int]
-f8 list = auxf8 (head list) list
+f8 list = f8Aux (head list) list
 
-auxf8 :: Int -> [Int] -> [Int]
-auxf8 n [] = []
-auxf8 n (x:xs)
-    | x < n = x : auxf8 n xs
-    | otherwise = auxf8 n xs
-
+f8Aux :: Int -> [Int] -> [Int]
+f8Aux _ [] = []
+f8Aux n (x:xs) 
+    | x < n = x : f8Aux n xs
+    | otherwise = f8Aux n xs
 
 -- main = print (f8 [5,1,2,3,4,5,3,6,7,1,8]) -- [1,2,3,4,3,1]
 
@@ -104,7 +105,11 @@ auxf8 n (x:xs)
 -- 9! ----------------------------------------------------------------------
 -- Eliminate in a list, the sublists that are longer or equal to 10.
 
---f9 :: [[Int]] -> [[Int]]
+f9 :: [[Int]] -> [[Int]]
+f9 [] = []
+f9 (x:xs) 
+    | length x < 10 = x : f9 xs
+    | otherwise = f9 xs
 
 -- main = print (f9 [[1..10], [1..11], [1..5], []]) -- [[1,2,3,4,5],[]]
 
@@ -116,17 +121,20 @@ auxf8 n (x:xs)
 f10 :: Int -> Int -> Int
 f10 a b
     | a > b = f10 (a - b) b
-    | b > a = f10 b (b - a)
     | otherwise = a
 
 -- main = print (f10 24 12) -- 12
 
 
 
+
 -- 11! ----------------------------------------------------------------------
 -- Given a list of Ints, remove the element at the given position.
 
---remElemAt :: Int -> [Int] -> [Int]
+remElemAt :: Int -> [Int] -> [Int]
+remElemAt _ [] = []
+remElemAt n list = take (n) list ++ drop (n+1) list 
+
 
 -- main = print (remElemAt 6 [1..7]) -- [1,2,3,4,5,6]
 -- main = print (remElemAt 2 [1..7]) -- [1,2,4,5,6,7]
@@ -149,7 +157,9 @@ reorder (x:y:z:[]) = [z, y, x]
 -- 13! ----------------------------------------------------------------------
 -- Write a function to convert a list of a person's names into initials (first letter sepparated by a '.').
 
---initials :: [String] -> String
+initials :: [String] -> String
+initials [] = []
+initials (x:xs) = [head x] ++ "." ++ initials xs 
 
 -- main = print (initials ["Sam", "Harris"]) -- "S.H."
 -- main = print (initials ["Howard", "Phillips", "Lovecraft"]) -- "H.P.L."
@@ -160,10 +170,8 @@ reorder (x:y:z:[]) = [z, y, x]
 -- Given a list of integers, find the minimum of a list (assume the list is not empty).
 
 minimum1 :: [Int] -> Int
-minimum1 [x] = x 
-minimum1 (x : y : xs)
-    | x < y = minimum1 (x:xs)
-    | otherwise = minimum1 (y:xs)
+minumum1 [] = 0
+minimum1 list = minimum list 
 
 -- [1,0,3,4,5]
 -- minimum1 [0,3,4,5]
@@ -197,7 +205,9 @@ minimum2 (x:xs) = min x (minimum2 xs)
 -- 15 ----------------------------------------------------------------------
 -- Print the max and min number of a string
 
---maxmin :: [Int] -> String
+maxmin :: [Int] -> String
+maxmin [] = []
+maxmin list = "max = " ++ show (maximum list) ++ ", min = " ++ show (minimum list) 
 
 -- main = print (maxmin [4,6,2,1,9,63,-134,566]) -- "max = 566, min = -134"
 -- main = print (maxmin [-52, 56, 30, 29, -54, 0, -110]) -- "max = 56, min = -110"
@@ -210,13 +220,11 @@ minimum2 (x:xs) = min x (minimum2 xs)
 
 ifOneTrue :: [Bool] -> Bool
 ifOneTrue [] = False
-ifOneTrue (x:xs)
-    | x = True 
-    | otherwise = ifOneTrue xs
+ifOneTrue list = elem True list
 
 --  False || False || False || False
 
--- main = print (ifOneTrue [False, False, False]) -- False
+-- main = print (ifOneTrue [False, True, False]) -- False
 
 ifOneTrue' :: [Bool] -> Bool -- (use the 'or' function)
 ifOneTrue' list = or list
@@ -229,11 +237,14 @@ ifOneTrue' list = or list
 -- 17 ----------------------------------------------------------------------
 -- Check if all elements of a list of Booleans are True.
 
---ifAllTrue :: [Bool] -> Bool
+ifAllTrue :: [Bool] -> Bool
+ifAllTrue [] = True
+ifAllTrue (x:xs) = x && ifAllTrue xs
 
 --  True && False && True && True
 
--- main = print (ifAllTrue [True, False, True]) -- False
+-- main :: IO ()
+-- main = print (ifAllTrue [False, True, True]) -- False
 
 --ifAllTrue' :: [Bool] -> Bool -- (use the 'and' function)
 
@@ -244,7 +255,15 @@ ifOneTrue' list = or list
 -- 18 ----------------------------------------------------------------------
 -- Write a function that checks if at least one of the elements in a list is even.
 
---isOneEven :: [Int] -> Bool
+isOneEven :: [Int] -> Bool
+isOneEven [] = True
+isOneEven list = length (lookForEvens list) > 0
+
+lookForEvens :: [Int] -> [Int]
+lookForEvens [] = []
+lookForEvens (x:xs)
+    | even x = x : lookForEvens xs
+    | otherwise = lookForEvens xs
 
 -- main = print (isOneEven [1,1,3])   -- False
 -- main = print (isOneEven [1..9])    -- True
@@ -256,7 +275,8 @@ ifOneTrue' list = or list
 -- 19 ----------------------------------------------------------------------
 -- Write a function that checks if all of the elements in a list are even.
 
---allEven :: [Int] -> Bool
+allEven :: [Int] -> Bool
+allEven list = length list == length (lookForEvens list)
 
 -- main = print (allEven [2,4,6])   -- True -- [2,4,6] -> even 2 && even 4 && even 6 && True
 -- main = print (allEven [1..9])    -- False
@@ -268,14 +288,17 @@ ifOneTrue' list = or list
 -- 20 ----------------------------------------------------------------------
 -- Collect the divisors of a number in a list.
 
--- divisors :: Int -> [Int] -- (use a list to accumulate the values)
--- divisors n = divisorsAux n n []
+divisors :: Int -> [Int] -- (use a list to accumulate the values)
+divisors 0 = []
+divisors n = reverse (divisorsAux n n)
 
--- divisorsAux :: Int -> Int -> [Int] -> [Int]
--- divisorsAux 0 inc acc = acc
--- divisorsAux n inc list
---     | n `rem` inc == 0 = divisorsAux n (inc - 1)(inc : list)
---     -- |otherwise = divisorsAux n (inc - 1) acc
+divisorsAux :: Int -> Int -> [Int]
+divisorsAux _ 0  = []
+divisorsAux n m 
+    | n `mod` m == 0 = m : divisorsAux n (m-1)
+    | otherwise = divisorsAux n (m-1)
+
+
 
 -- main = print (divisors 18) -- [1,2,3,6,9,18]
 
@@ -288,7 +311,11 @@ ifOneTrue' list = or list
 -- 21 ----------------------------------------------------------------------
 -- Delete every second element from a list.
 
---del2 :: [Int] -> [Int]
+del2 :: [Int] -> [Int]
+del2 [] = []
+del2 (x:xs) 
+    | even x = del2 xs
+    | otherwise = x : del2 xs
 
 -- main = print (del2 [1..10]) -- [1,3,5,7,9]
 -- main = print (del2 [1..11]) -- [1,3,5,7,9,11]
@@ -298,7 +325,14 @@ ifOneTrue' list = or list
 -- 22 ----------------------------------------------------------------------
 -- Delete every third element of the sublists of a list.
 
---delete_3 :: [Int] -> [Int]
+delete_3 :: [[Int]] -> [[Int]]
+delete_3 [] = []
+delete_3 (x:xs) = remElemAt 2 x : delete_3 xs 
+
+
+-- remElemAt :: Int -> [Int] -> [Int]
+-- remElemAt _ [] = []
+-- remElemAt n list = take (n) list ++ drop (n+1) list 
 
 -- main = print (f19 [1..15]) -- [1,2,4,5,7,8,10,11,13,14]
 
@@ -306,7 +340,7 @@ ifOneTrue' list = or list
 
 --del3 :: [[Int]] -> [[Int]]
 
--- main = print (del3 [[1..5],[],[1..4],[1,5],[1],[1..3],[1..10]])
+-- main = print (delete_3 [[1..5],[],[1..4],[1,5],[1],[1..3],[1..10]])
 -- [[1,2,4,5],[],[1,2,4],[1,5],[1],[1,2],[1,2,4,5,7,8,10]]
 
 
@@ -316,9 +350,18 @@ ifOneTrue' list = or list
 -- (they can be anywhere in the list) and count such equalitites
 -- for [1,2,2,3,4,3,3,2,4,5,5,5] is 4 for [1 .. 5] is 0.
 
---fe :: [Int] -> Int
+fe :: [Int] -> Int
+fe [] = 0
+fe list = length (feAux list)
 
--- main = print (fe [1,2,2,2,3,4,3,3,2,4,5,5,5,5,5,5,5,5,5]) -- 11
+feAux :: [Int] -> [Int]
+feAux [] = []
+feAux [x] = [x]
+feAux (x:y:xs) 
+    | x == y = x : feAux (y:xs)
+    | otherwise =  feAux (y:xs)
+
+main = print (feAux [1,2,2,2,3,4,3,3,2,4,5,5,5,5,5,5,5,5,5]) -- 11
 
 
 
